@@ -1,16 +1,17 @@
 import copy
 
 from conceptdrift.source.control_flow_controller import evolve_tree_randomly_gs
-from conceptdrift.source.event_log_controller import length_of_log
+from conceptdrift.source.event_log_controller import length_of_log, include_noise_in_log
+from conceptdrift.source.process_tree_controller import generate_tree
+from pm4py.objects.process_tree import semantics
 
 
-def add_noise_doc(event_log, tree, pro_noise, type_noise, start_noise, end_noise):
-    """ Introduction of noise into an event log for text file conceptdrift
+def add_noise(event_log, pro_noise=0.05, start_noise=0, end_noise=1, tree=None):
+    """ Introduction of noise into an event log
 
     :param event_log: event log
-    :param tree: process tree for noise conceptdrift
+    :param tree: process tree for noise
     :param pro_noise: proportion of noise in sector
-    :param type_noise: type of noise (i.e. random or changed)
     :param start_noise: start point of noise
     :param end_noise: end point of noise
     :return: event log with noise
@@ -18,7 +19,7 @@ def add_noise_doc(event_log, tree, pro_noise, type_noise, start_noise, end_noise
     nu_traces = int(
         round(((length_of_log(event_log) * end_noise) - (
                 length_of_log(event_log) * start_noise)) * pro_noise + 0.0001))
-    if type_noise == 'changed_model':
+    if tree is not None:
         drift_tree = copy.deepcopy(tree)
         drift_tree, a, b, c = evolve_tree_randomly_gs(drift_tree, 0.4)
         log_noise = semantics.generate_log(drift_tree, nu_traces)

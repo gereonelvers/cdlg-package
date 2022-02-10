@@ -1,3 +1,5 @@
+import copy
+import datetime
 import math
 
 import numpy
@@ -5,10 +7,13 @@ from pm4py.objects.log.obj import EventLog
 
 from pm4py.objects.process_tree import semantics
 
-from conceptdrift.source.event_log_controller import combine_two_logs
+from conceptdrift.source.control_flow_controller import evolve_tree_randomly_gs
+from conceptdrift.source.event_log_controller import combine_two_logs, add_duration_to_log, get_timestamp_log
+from conceptdrift.source.process_tree_controller import generate_specific_trees, visualise_tree
+from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def gradual_drift(tree_one, tree_two, nu_traces, start_point, end_point, distribution_type):
+def gradual_drift(nu_traces=1000, start_point=0.4, end_point=0.6, distribution_type='linear', tree_one=None, tree_two=0.2):
     """ Generation of an event log with a gradual drift
 
     :param tree_one: initial version of the process tree
@@ -19,16 +24,45 @@ def gradual_drift(tree_one, tree_two, nu_traces, start_point, end_point, distrib
     :param distribution_type: type of distribution of the traces during the drift (linear, exponential)
     :return: event log with gradual drift
     """
+    deleted_acs = []
+    added_acs = []
+    moved_acs = []
+    if tree_one is None:
+        ver_one = generate_specific_trees('middle')
+        ver_copy = copy.deepcopy(ver_one)
+        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
+        visualise_tree(ver_one)
+        visualise_tree(ver_two)
+    elif tree_one is not None and isinstance(tree_two, float):
+        ver_one = tree_one
+        ver_copy = copy.deepcopy(ver_one)
+        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
+        visualise_tree(ver_one)
+        visualise_tree(ver_two)
+    else:
+        ver_one = tree_one
+        ver_two = tree_two
+        visualise_tree(ver_one)
+        visualise_tree(ver_two)
     log_before_drift_traces = int(round((start_point * nu_traces) + 0.0001))
     log_after_drift_traces = int(round(((1-end_point)*nu_traces)+0.0001))
     nu_traces_for_drift = nu_traces - log_before_drift_traces - log_after_drift_traces
-    log_before_drift = semantics.generate_log(tree_one, log_before_drift_traces)
-    log_after_drift = semantics.generate_log(tree_two, log_after_drift_traces)
-    log_combined_with_drift = distribute_traces(tree_one, tree_two, distribution_type,
+    log_before_drift = semantics.generate_log(ver_one, log_before_drift_traces)
+    log_after_drift = semantics.generate_log(ver_two, log_after_drift_traces)
+    log_combined_with_drift = distribute_traces(ver_one, ver_two, distribution_type,
                                                 nu_traces_for_drift)
     log_be_one = combine_two_logs(log_before_drift, log_combined_with_drift)
-    logs_combined = combine_two_logs(log_be_one, log_after_drift)
-    return logs_combined
+    event_log = combine_two_logs(log_be_one, log_after_drift)
+    date = datetime.datetime.strptime('20/8/3 8:0:0', '%y/%d/%m %H:%M:%S')
+    add_duration_to_log(event_log, date, 1, 14000)
+    start_drift = get_timestamp_log(event_log, nu_traces, start_point)
+    end_drift = get_timestamp_log(event_log, nu_traces, end_point)
+    if isinstance(tree_two, float):
+        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+    else:
+        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)
+    event_log.attributes['drift info'] = data
+    return event_log
 
 
 def distribute_traces(tree_one, tree_two, distribute_type, nu_traces):
@@ -133,3 +167,10 @@ def get_rest_parameter(nu_traces, distribute_type):
             rests_two.append(rest_two)
             rounds.append(round_l)
     return rests_one[numpy.argmin(rests_one)], rests_two[numpy.argmin(rests_one)], rounds[numpy.argmin(rests_one)], (numpy.argmin(rests_one)*0.1)+0.5
+
+"---TESTS---"
+# ve_one = generate_specific_trees('simple')
+# ve_two = generate_specific_trees('simple')
+# log = gradual_drift(200, 0.4, ve_one, 0.5)
+log = gradual_drift()
+xes_exporter.apply(log, "event_log.xes")

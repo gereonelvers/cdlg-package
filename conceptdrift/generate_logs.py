@@ -97,14 +97,15 @@ def generate_logs(tree_one, tree_two, num_logs, num_traces, drifts, drift_area, 
                 end_drift = "N/A"
             else:
                 end_drift = get_timestamp_log(event_log, num_traces, drift_area_two)
-            data = "Event Log: "+"event_log_"+str(i)+"; Drift Perspective: control-flow; Drift Type: "+drift+"; Drift Specific Information: "+dr_s+"; Drift Start Timestamp: "+str(start_drift)+"; Drift End Timestamp: "+str(end_drift)+"; Noise Proportion: "+str(noise_prop)+"; Activities Added: "+str(added_acs)+"; Activities Deleted: "+str(deleted_acs)+"; Activities Moved: "+str(moved_acs)
-            xes_exporter.apply(event_log, "Data/result_data/gold_standard/event_log_"+str(i)+".xes")
+            data = "event log: "+"event_log_"+str(i)+"; drift perspective: control-flow; drift type: "+drift+"; drift specific information: "+dr_s+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; noise proportion: "+str(noise_prop)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+            event_log.attributes['drift info'] = data
+            xes_exporter.apply(event_log, filepath+"/event_log_"+str(i)+".xes")
             writer.writerow(["event_log_"+str(i), "control-flow", drift, dr_s, start_drift, end_drift, noise_prop, added_acs, deleted_acs, moved_acs])
-            file_object = open("Data/result_data/gold_standard/event_log_"+str(i)+".txt", 'w')
+            file_object = open(filepath+"event_log_"+str(i)+".txt", 'w')
             file_object.write("--- USED PARAMETERS ---\n")
             file_object.write(parameters+"\n\n")
             file_object.write("--- DRIFT INFORMATION ---\n")
             file_object.write(data)
             file_object.close()
-    ptml_exporter.apply(tree_one, "Data/result_data/gold_standard/initial_version.ptml")
+    ptml_exporter.apply(tree_one, filepath+"/initial_version.ptml")
 

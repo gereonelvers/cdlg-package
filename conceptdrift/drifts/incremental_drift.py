@@ -1,25 +1,57 @@
 import copy
+import datetime
 
 from pm4py.objects.process_tree import semantics
-from pm4py.objects.log.obj import EventLog
 
 from conceptdrift.source.control_flow_controller import evolve_tree_randomly_gs
-from conceptdrift.source.event_log_controller import combine_two_logs
+from conceptdrift.source.event_log_controller import combine_two_logs, add_duration_to_log, get_timestamp_log
+from conceptdrift.source.process_tree_controller import generate_specific_trees, visualise_tree
+from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def incremental_drift(trees, traces):
+def incremental_drift(num_versions=4, evolution_stage=0.1, tree=generate_specific_trees('middle'), traces=None):
     """ Generation of an event log with an incremental drift
-    :param trees: process tree model versions in a list
-    :param traces: number traces for each version at same position of list
+    :param evolution_stage: proportion of total activities to be affected by the random evolution
+    :param num_versions: number of occurring process tree versions
+    :param tree: initial process tree model version
+    :param traces: number traces for each version in list --> [300,200,200]
     :return: event log with incremental drift
     """
+    vers = [tree]
+    num_traces = []
+    deleted_acs = []
+    added_acs = []
+    moved_acs = []
+    if traces is None:
+        j = 0
+        while j < num_versions:
+            num_traces.append(300)
+            j += 1
+    else:
+        num_traces = traces
     i = 0
-    result = EventLog()
-    while i < len(trees):
-        log = semantics.generate_log(trees[i], traces[i])
-        result = combine_two_logs(result, log)
+    event_log = semantics.generate_log(vers[i], num_traces[i])
+    while i < num_versions-1:
+        ver_copy = copy.deepcopy(vers[i])
+        ver_new, deleted_ac, added_ac, moved_ac = evolve_tree_randomly_gs(ver_copy, evolution_stage)
+        deleted_acs.extend(deleted_ac)
+        added_acs.extend(added_ac)
+        moved_acs.extend(moved_ac)
+        visualise_tree(ver_new)
+        vers.append(ver_new)
+        log = semantics.generate_log(vers[i + 1], num_traces[i + 1])
+        event_log = combine_two_logs(event_log, log)
         i = i + 1
-    return result
+    date = datetime.datetime.strptime('20/8/3 8:0:0', '%y/%d/%m %H:%M:%S')
+    add_duration_to_log(event_log, date, 1, 14000)
+    len(event_log)
+    start_area = float(num_traces[0]/len(event_log))
+    end_area = float((len(event_log) - num_traces[len(num_traces)-1])/len(event_log))
+    start_drift = get_timestamp_log(event_log, len(event_log), start_area)
+    end_drift = get_timestamp_log(event_log, len(event_log), end_area)
+    data = "drift type: incremental; drift perspective: control-flow; drift specific information: " + str(num_versions) + " occurring process versions; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+    event_log.attributes['drift info'] = data
+    return event_log
 
 
 def incremental_drift_gs(tree_one, start_point, end_point, nu_traces, nu_models, proportion_random_evolution):
@@ -60,3 +92,10 @@ def incremental_drift_gs(tree_one, start_point, end_point, nu_traces, nu_models,
     log = semantics.generate_log(tree_ev, end_traces)
     result = combine_two_logs(result, log)
     return result, deleted_acs, added_acs, moved_acs
+
+"---TESTS---"
+ve_one = generate_specific_trees('complex')
+# ve_two = generate_specific_trees('simple')
+logi = incremental_drift(5, 0.3, ve_one)
+# logi = incremental_drift()
+xes_exporter.apply(logi, "event_log.xes")
