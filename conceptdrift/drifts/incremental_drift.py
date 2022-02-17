@@ -37,7 +37,6 @@ def incremental_drift(num_versions=4, evolution_stage=0.1, tree=generate_specifi
         deleted_acs.extend(deleted_ac)
         added_acs.extend(added_ac)
         moved_acs.extend(moved_ac)
-        visualise_tree(ver_new)
         vers.append(ver_new)
         log = semantics.generate_log(vers[i + 1], num_traces[i + 1])
         event_log = combine_two_logs(event_log, log)
@@ -94,8 +93,8 @@ def incremental_drift_gs(tree_one, start_point, end_point, nu_traces, nu_models,
     return result, deleted_acs, added_acs, moved_acs
 
 "---TESTS---"
-ve_one = generate_specific_trees('complex')
+# ve_one = generate_specific_trees('complex')
 # ve_two = generate_specific_trees('simple')
-logi = incremental_drift(5, 0.3, ve_one)
+# logi = incremental_drift(5, 0.3, ve_one)
 # logi = incremental_drift()
-xes_exporter.apply(logi, "event_log.xes")
+# xes_exporter.apply(logi, "event_log.xes")

@@ -30,19 +30,13 @@ def recurring_drift(nu_traces=1000, start_point=0.0,
         ver_one = generate_specific_trees('middle')
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     elif tree_one is not None and isinstance(tree_two, float):
         ver_one = tree_one
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     else:
         ver_one = tree_one
         ver_two = tree_two
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     nu_traces_log_one = int(
         round((nu_traces * start_point) + (nu_traces * ((end_point - start_point) * proportion_first)) + 0.0001))
     nu_traces_log_two = nu_traces - nu_traces_log_one

@@ -25,19 +25,13 @@ def sudden_drift(nu_traces=1000, change_point=0.5, tree_one=None, tree_two=0.2):
         ver_one = generate_specific_trees('middle')
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     elif tree_one is not None and isinstance(tree_two, float):
         ver_one = tree_one
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     else:
         ver_one = tree_one
         ver_two = tree_two
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     log_one_traces = int(round(nu_traces * change_point))
     log_two_traces = nu_traces - log_one_traces
     log_one = semantics.generate_log(ver_one, log_one_traces)
@@ -58,5 +52,5 @@ def sudden_drift(nu_traces=1000, change_point=0.5, tree_one=None, tree_two=0.2):
 # ve_one = generate_specific_trees('simple')
 # ve_two = generate_specific_trees('simple')
 # log = sudden_drift(200, 0.4, ve_one, 0.5)
-log = sudden_drift()
+# log = sudden_drift()
 # xes_exporter.apply(log, "event_log.xes")

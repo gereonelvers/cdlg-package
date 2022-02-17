@@ -31,19 +31,13 @@ def gradual_drift(nu_traces=1000, start_point=0.4, end_point=0.6, distribution_t
         ver_one = generate_specific_trees('middle')
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     elif tree_one is not None and isinstance(tree_two, float):
         ver_one = tree_one
         ver_copy = copy.deepcopy(ver_one)
         ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     else:
         ver_one = tree_one
         ver_two = tree_two
-        visualise_tree(ver_one)
-        visualise_tree(ver_two)
     log_before_drift_traces = int(round((start_point * nu_traces) + 0.0001))
     log_after_drift_traces = int(round(((1-end_point)*nu_traces)+0.0001))
     nu_traces_for_drift = nu_traces - log_before_drift_traces - log_after_drift_traces
@@ -172,5 +166,5 @@ def get_rest_parameter(nu_traces, distribute_type):
 # ve_one = generate_specific_trees('simple')
 # ve_two = generate_specific_trees('simple')
 # log = gradual_drift(200, 0.4, ve_one, 0.5)
-log = gradual_drift()
-xes_exporter.apply(log, "event_log.xes")
+# log = gradual_drift()
+# xes_exporter.apply(log, "event_log.xes")
