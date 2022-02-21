@@ -7,40 +7,42 @@ from pm4py.objects.log.obj import EventLog
 
 from pm4py.objects.process_tree import semantics
 
-from conceptdrift.source.control_flow_controller import evolve_tree_randomly_gs
+from conceptdrift.source.evolution import evolve_tree_randomly_gs
 from conceptdrift.source.event_log_controller import combine_two_logs, add_duration_to_log, get_timestamp_log
+from conceptdrift.source.noise import add_noise
 from conceptdrift.source.process_tree_controller import generate_specific_trees, visualise_tree
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def gradual_drift(nu_traces=1000, start_point=0.4, end_point=0.6, distribution_type='linear', tree_one=None, tree_two=0.2):
+def gradual_drift(num_traces=1000, start_point=0.4, end_point=0.6, distribution_type='linear', model_one=None, model_two=None, change_proportion=0.2):
     """ Generation of an event log with a gradual drift
 
-    :param tree_one: initial version of the process tree
-    :param tree_two: evolved version of the process tree
-    :param nu_traces: number of traces in the log
-    :param start_point: start change point of the drift in percentage
-    :param end_point: end change point of the drift in percentage
-    :param distribution_type: type of distribution of the traces during the drift (linear, exponential)
+    :param num_traces: number of traces in the event log
+    :param start_point: start change point of the drift as a proportion of the total number of traces
+    :param end_point: end change point of the drift as a proportion of the total number of traces
+    :param distribution_type: type of distribution of the traces during the drift [linear, exponential]
+    :param model_one: initial version of the process tree
+    :param model_two: evolved version of the process tree
+    :param change_proportion: proportion of total number of activities to be changed by random evolution (model_two must be None if random evolution is targeted)
     :return: event log with gradual drift
     """
     deleted_acs = []
     added_acs = []
     moved_acs = []
-    if tree_one is None:
+    if model_one is None:
         ver_one = generate_specific_trees('middle')
         ver_copy = copy.deepcopy(ver_one)
-        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
-    elif tree_one is not None and isinstance(tree_two, float):
-        ver_one = tree_one
+        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, change_proportion)
+    elif model_one is not None and model_two is None:
+        ver_one = model_one
         ver_copy = copy.deepcopy(ver_one)
-        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, tree_two)
+        ver_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(ver_copy, change_proportion)
     else:
-        ver_one = tree_one
-        ver_two = tree_two
-    log_before_drift_traces = int(round((start_point * nu_traces) + 0.0001))
-    log_after_drift_traces = int(round(((1-end_point)*nu_traces)+0.0001))
-    nu_traces_for_drift = nu_traces - log_before_drift_traces - log_after_drift_traces
+        ver_one = model_one
+        ver_two = model_two
+    log_before_drift_traces = int(round((start_point * num_traces) + 0.0001))
+    log_after_drift_traces = int(round(((1-end_point) * num_traces) + 0.0001))
+    nu_traces_for_drift = num_traces - log_before_drift_traces - log_after_drift_traces
     log_before_drift = semantics.generate_log(ver_one, log_before_drift_traces)
     log_after_drift = semantics.generate_log(ver_two, log_after_drift_traces)
     log_combined_with_drift = distribute_traces(ver_one, ver_two, distribution_type,
@@ -49,9 +51,9 @@ def gradual_drift(nu_traces=1000, start_point=0.4, end_point=0.6, distribution_t
     event_log = combine_two_logs(log_be_one, log_after_drift)
     date = datetime.datetime.strptime('20/8/3 8:0:0', '%y/%d/%m %H:%M:%S')
     add_duration_to_log(event_log, date, 1, 14000)
-    start_drift = get_timestamp_log(event_log, nu_traces, start_point)
-    end_drift = get_timestamp_log(event_log, nu_traces, end_point)
-    if isinstance(tree_two, float):
+    start_drift = get_timestamp_log(event_log, num_traces, start_point)
+    end_drift = get_timestamp_log(event_log, num_traces, end_point)
+    if model_two is None:
         data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
     else:
         data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)
@@ -168,3 +170,5 @@ def get_rest_parameter(nu_traces, distribute_type):
 # log = gradual_drift(200, 0.4, ve_one, 0.5)
 # log = gradual_drift()
 # xes_exporter.apply(log, "event_log.xes")
+# event_log = add_noise(log)
+# xes_exporter.apply(event_log, "event_log_noise.xes")

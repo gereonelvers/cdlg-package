@@ -3,21 +3,22 @@ import datetime
 
 from pm4py.objects.process_tree import semantics
 
-from conceptdrift.source.control_flow_controller import evolve_tree_randomly_gs
+from conceptdrift.source.evolution import evolve_tree_randomly_gs
 from conceptdrift.source.event_log_controller import combine_two_logs, add_duration_to_log, get_timestamp_log
 from conceptdrift.source.process_tree_controller import generate_specific_trees, visualise_tree
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def incremental_drift(num_versions=4, evolution_stage=0.1, tree=generate_specific_trees('middle'), traces=None):
+def incremental_drift(num_versions=4, traces=None, change_proportion=0.1, model=generate_specific_trees('middle')):
     """ Generation of an event log with an incremental drift
-    :param evolution_stage: proportion of total activities to be affected by the random evolution
+    
     :param num_versions: number of occurring process tree versions
-    :param tree: initial process tree model version
-    :param traces: number traces for each version in list --> [300,200,200]
+    :param traces: number traces for each version in list (e.g. [300,200,200])
+    :param change_proportion: proportion of total activities to be affected by the random evolution
+    :param model: initial process tree model version
     :return: event log with incremental drift
     """
-    vers = [tree]
+    vers = [model]
     num_traces = []
     deleted_acs = []
     added_acs = []
@@ -33,7 +34,7 @@ def incremental_drift(num_versions=4, evolution_stage=0.1, tree=generate_specifi
     event_log = semantics.generate_log(vers[i], num_traces[i])
     while i < num_versions-1:
         ver_copy = copy.deepcopy(vers[i])
-        ver_new, deleted_ac, added_ac, moved_ac = evolve_tree_randomly_gs(ver_copy, evolution_stage)
+        ver_new, deleted_ac, added_ac, moved_ac = evolve_tree_randomly_gs(ver_copy, change_proportion)
         deleted_acs.extend(deleted_ac)
         added_acs.extend(added_ac)
         moved_acs.extend(moved_ac)

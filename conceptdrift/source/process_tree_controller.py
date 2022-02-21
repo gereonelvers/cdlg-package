@@ -5,6 +5,7 @@ import re
 from random import randint
 
 import pm4py
+from pm4py.objects.bpmn.obj import BPMN
 from pm4py.objects.process_tree.obj import ProcessTree, Operator
 from pm4py.visualization.process_tree import visualizer as pt_visualizer
 from pm4py.algo.simulation.tree_generator import algorithm as tree_gen
@@ -113,7 +114,12 @@ def break_down_tree_fully(tree):
     return operators_list, all_tree_list_without_leaves, tree_dict
 
 
-def generate_specific_trees(str_clp):
+def generate_specific_trees(str_clp='middle'):
+    """ Generation of a random process tree with different complexity
+
+    :param str_clp: complexity of process tree ['simple','middle','complex']
+    :return: randomly generated process tree
+    """
     if str_clp == 'simple':
         parameters = {'mode': 10, 'min': 8, 'max': 12, 'sequence': 0.25, 'choice': 0.25, 'parallel': 0.25, 'loop': 0.2,
                       'or': 0, 'silent': 0, 'duplicate': 0, 'lt_dependency': 0, 'infrequent': 0.25, 'no_models': 10,
@@ -240,7 +246,12 @@ def get_right_rand_ac(count, tree):
     return count
 
 
-def generate_tree_from_file(str_cf):
+def import_process_model(str_cf):
+    """ Imports process model and changes it to a process tree
+
+    :param str_cf: filepath as string
+    :return: process tree
+    """
     if re.fullmatch('.*\.ptml', str_cf):
         return ptml_importer.apply(str_cf)
     elif re.fullmatch('.*\.bpmn', str_cf):
@@ -249,6 +260,19 @@ def generate_tree_from_file(str_cf):
         return wf_net_converter.apply(net, im, fm)
     else:
         net, im, fm = pnml_importer.apply(str_cf)
+        return wf_net_converter.apply(net, im, fm)
+
+
+def change_process_model(model):
+    """ Changes process model to a process tree
+
+    :param model: process model (BPMN/ process tree)
+    :return: process tree
+    """
+    if isinstance(model, ProcessTree):
+        return model
+    elif isinstance(model, BPMN):
+        net, im, fm = bpmn_converter.apply(model)
         return wf_net_converter.apply(net, im, fm)
 
 

@@ -6,18 +6,18 @@ from conceptdrift.source.process_tree_controller import count_real_acs, randomiz
     randomize_tree_three, randomize_tree_more
 
 
-def evolve_tree_randomly(tree, evolution_stage):
+def evolve_tree_randomly(tree, change_proportion=0.2):
     """ Random change of the process tree
 
-    :param tree: tree to be changed
-    :param evolution_stage: proportion of total number of activities to be affected by the change
+    :param tree: process tree version to be changed
+    :param change_proportion: proportion of total number of activities to be affected by the changes
     :return: randomly evolved process tree version
     """
     acs = count_real_acs(tree._get_leaves())
     changed_acs = []
-    rounds = int(round(acs * evolution_stage + 0.001))
+    rounds = int(round(acs * change_proportion + 0.001))
     if rounds == 0:
-        rounds = int(nmp.ceil(acs * evolution_stage))
+        rounds = int(nmp.ceil(acs * change_proportion))
     i = 0
     count = 1
     happen = "Control-flow changes: "
