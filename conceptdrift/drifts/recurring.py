@@ -84,9 +84,9 @@ def recurring_drift(num_traces=1000, start_point=0.0, end_point=1.0, num_of_seas
     start_drift = get_timestamp_log(event_log, num_traces, start_point)
     end_drift = get_timestamp_log(event_log, num_traces, end_point)
     if model_two is None:
-        data = "drift perspective: control-flow; drift type: recurring; drift specific information: " + str(num_of_seasonal_changes) + " seasonal changes; drift start timestamp: " + str(start_drift) + "; drift end timestamp: " + str(end_drift) + "; activities added: " + str(added_acs) + "; activities deleted: " + str(deleted_acs) + "; activities moved: " + str(moved_acs)
+        data = "drift perspective: control-flow; drift type: recurring; drift specific information: " + str(num_of_seasonal_changes) + " seasonal changes; drift start timestamp: " + str(start_drift) + " (" + str(start_point) + "); drift end timestamp: " + str(end_drift) + " (" + str(end_point) + "); activities added: " + str(added_acs) + "; activities deleted: " + str(deleted_acs) + "; activities moved: " + str(moved_acs)
     else:
-        data = "drift perspective: control-flow; drift type: recurring; drift specific information: " + str(num_of_seasonal_changes) + " seasonal changes; drift start timestamp: " + str(start_drift) + "; drift end timestamp: " + str(end_drift)
+        data = "drift perspective: control-flow; drift type: recurring; drift specific information: " + str(num_of_seasonal_changes) + " seasonal changes; drift start timestamp: " + str(start_drift) + " (" + str(start_point) + "); drift end timestamp: " + str(end_drift) + " (" + str(end_point) + ")"
     event_log.attributes['drift info'] = data
     return event_log
 

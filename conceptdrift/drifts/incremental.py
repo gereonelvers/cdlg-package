@@ -5,8 +5,7 @@ from pm4py.objects.process_tree import semantics
 
 from conceptdrift.source.evolution import evolve_tree_randomly_gs
 from conceptdrift.source.event_log_controller import combine_two_logs, add_duration_to_log, get_timestamp_log
-from conceptdrift.source.process_tree_controller import generate_specific_trees, visualise_tree
-from pm4py.objects.log.exporter.xes import exporter as xes_exporter
+from conceptdrift.source.process_tree_controller import generate_specific_trees
 
 
 def incremental_drift(num_versions=4, traces=None, change_proportion=0.1, model=generate_specific_trees('middle')):
@@ -49,13 +48,13 @@ def incremental_drift(num_versions=4, traces=None, change_proportion=0.1, model=
     end_area = float((len(event_log) - num_traces[len(num_traces)-1])/len(event_log))
     start_drift = get_timestamp_log(event_log, len(event_log), start_area)
     end_drift = get_timestamp_log(event_log, len(event_log), end_area)
-    data = "drift type: incremental; drift perspective: control-flow; drift specific information: " + str(num_versions) + " occurring process versions; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+    data = "drift type: incremental; drift perspective: control-flow; drift specific information: " + str(num_versions) + " versions of the process model; drift start timestamp: "+str(start_drift)+" (" + str(round(start_area, 2)) + "); drift end timestamp: "+str(end_drift)+" (" + str(round(end_area, 2)) + "); activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
     event_log.attributes['drift info'] = data
     return event_log
 
 
 def incremental_drift_gs(tree_one, start_point, end_point, nu_traces, nu_models, proportion_random_evolution):
-    """ Generation of an event log with an incremental drift for gold standard conceptdrift
+    """ Generation of an event log with an incremental drift for gold standard
 
     :param proportion_random_evolution: proportion of the process model version to be evolved
     :param tree_one: initial model

@@ -42,9 +42,9 @@ def sudden_drift(num_traces=1000, change_point=0.5, model_one=None, model_two=No
     add_duration_to_log(event_log, date, 1, 14000)
     start_drift = get_timestamp_log(event_log, num_traces, change_point)
     if model_two is None:
-        data = "drift perspective: control-flow; drift type: sudden; drift start timestamp: "+str(start_drift)+" activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+        data = "drift perspective: control-flow; drift type: sudden; drift start timestamp: "+str(start_drift) + " (" + str(change_point) + "); activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
     else:
-        data = "drift perspective: control-flow; drift type: sudden; drift start timestamp: "+str(start_drift)
+        data = "drift perspective: control-flow; drift type: sudden; drift start timestamp: "+str(start_drift)+ " (" + str(change_point) + ")"
     event_log.attributes['drift info'] = data
     return event_log
 

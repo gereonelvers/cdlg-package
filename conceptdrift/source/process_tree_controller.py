@@ -412,7 +412,7 @@ def change_random_operator_num(tree, wish_operator, length, changed_acs):
         i = randint(0, len(operators_list) - 1)
         while not check_tree_part(all_tree_operator_list[i], length, changed_acs, wish_operator):
             i = randint(0, len(operators_list) - 1)
-        if check_condition_empty_trace_two(tree, all_tree_operator_list[i], wish_operator) and wish_operator != all_tree_operator_list[i]._get_operator():
+        if check_condition_empty_trace_two(tree, all_tree_operator_list[i], wish_operator) and wish_operator != all_tree_operator_list[i]._get_operator() and (wish_operator != get_type_operator('xor loop') or (wish_operator == get_type_operator('xor loop') and 1 < len(all_tree_operator_list[i].children) < 4)):
             leaves = get_leaves_of_part_tree(all_tree_operator_list[i])
             for leaf in leaves:
                 if leaf._get_label() is None:

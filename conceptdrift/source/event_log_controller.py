@@ -309,10 +309,6 @@ def include_noise_in_log(log_total, log_noise, start_noise, end_noise):
     for trace in log_result_with_noise:
         trace._set_attributes({'concept:name': str(count)})
         count = 1 + count
-    data_drift = log_total.attributes['drift info']
-    log_result_with_noise.attributes['drift info'] = data_drift
-    data_noise = log_noise.attributes['noise info']
-    log_result_with_noise.attributes['noise info'] = data_noise
     return log_result_with_noise
 
 

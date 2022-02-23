@@ -1,7 +1,7 @@
 import copy
 
 from conceptdrift.source.evolution import evolve_tree_randomly_gs
-from conceptdrift.source.event_log_controller import length_of_log, include_noise_in_log
+from conceptdrift.source.event_log_controller import length_of_log, include_noise_in_log, get_timestamp_log
 from conceptdrift.source.process_tree_controller import generate_tree
 from pm4py.objects.process_tree import semantics
 
@@ -23,17 +23,21 @@ def add_noise(event_log, pro_noise=0.05, start_noise=0, end_noise=1, model=None)
         drift_tree = copy.deepcopy(model)
         drift_tree, a, b, c = evolve_tree_randomly_gs(drift_tree, 0.4)
         log_noise = semantics.generate_log(drift_tree, nu_traces)
-        data = "noise proportion: "+str(pro_noise) + "; start point: " + str(start_noise) + "; end point: " + str(end_noise) + "; noise type: similar"
-        log_noise.attributes['noise info'] = data
+
+        data = "noise proportion: "+str(pro_noise) + "; start point: " + str(get_timestamp_log(event_log, len(event_log), start_noise)) + " ("+str(start_noise) + "); end point: " + str(get_timestamp_log(event_log, len(event_log), end_noise)) + " ("+str(end_noise) + "); noise type: similar"
     else:
         model = generate_tree(
             {'mode': 8, 'min': 6, 'max': 10, 'sequence': 0.25, 'choice': 0.25, 'parallel': 0.25, 'loop': 0.2, 'or': 0,
              'silent': 0, 'duplicate': 0, 'lt_dependency': 0, 'infrequent': 0.25, 'no_models': 10, 'unfold': 10,
              'max_repeat': 10})
         log_noise = semantics.generate_log(model, nu_traces)
-        data = "noise proportion: "+str(pro_noise) + "; start point: " + str(start_noise) + "; end point: " + str(end_noise) + "; noise type: random"
-        log_noise.attributes['noise info'] = data
-    return include_noise_in_log(event_log, log_noise, start_noise, end_noise)
+        data = "noise proportion: "+str(pro_noise) + "; start point: " + str(get_timestamp_log(event_log, len(event_log), start_noise)) + " ("+str(start_noise) + "); end point: " + str(get_timestamp_log(event_log, len(event_log), end_noise)) + " ("+str(end_noise) + "); noise type: random"
+    result = include_noise_in_log(event_log, log_noise, start_noise, end_noise)
+    data_drift = event_log.attributes['drift info']
+    result.attributes['drift info'] = data_drift
+    data_noise = log_noise.attributes['noise info']
+    result.attributes['noise info'] = data
+    return result
 
 
 def add_noise_gs(event_log, tree, pro_noise, type_noise, start_noise, end_noise):

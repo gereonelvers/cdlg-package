@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='concept-drift-generation',
+    name='cdlg-package',
     version='0.0.2',
     packages=['conceptdrift', 'conceptdrift.drifts', 'conceptdrift.source'],
     install_requires=[
@@ -9,8 +9,8 @@ setup(
         'graphviz==0.17'
     ],
     url='',
-    license='MIT',
+    license='GPL 3.0',
     author='Justus Grimm',
-    author_email='jgrimm98@gmx.de',
+    author_email='jugrimm@mail.uni-mannheim.de',
     description='Module for creating drifts in logs and randomly evolving a process tree to a new version.'
 )

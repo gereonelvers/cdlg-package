@@ -54,9 +54,9 @@ def gradual_drift(num_traces=1000, start_point=0.4, end_point=0.6, distribution_
     start_drift = get_timestamp_log(event_log, num_traces, start_point)
     end_drift = get_timestamp_log(event_log, num_traces, end_point)
     if model_two is None:
-        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)+"; activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
+        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+" distribution; drift start timestamp: "+str(start_drift)+" (" + str(start_point) + "); drift end timestamp: "+str(end_drift) + " (" + str(end_point) + "); activities added: "+str(added_acs)+"; activities deleted: "+str(deleted_acs)+"; activities moved: "+str(moved_acs)
     else:
-        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+"; drift start timestamp: "+str(start_drift)+"; drift end timestamp: "+str(end_drift)
+        data = "drift perspective: control-flow; drift type: gradual; drift specific information: "+distribution_type+" distribution; drift start timestamp: "+str(start_drift)+" (" + str(start_point) + "); drift end timestamp: "+str(end_drift) + " (" + str(end_point) + ")"
     event_log.attributes['drift info'] = data
     return event_log
 
