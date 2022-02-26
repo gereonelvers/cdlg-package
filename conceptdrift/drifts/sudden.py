@@ -9,7 +9,7 @@ from conceptdrift.source.process_tree_controller import generate_specific_trees,
 # from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def sudden_drift(num_traces=1000, change_point=0.5, model_one=None, model_two=None, change_proportion=0.2):
+def generate_log_with_sudden_drift(num_traces=1000, change_point=0.5, model_one=None, model_two=None, change_proportion=0.2):
     """ Generation of an event log with a sudden drift
 
     :param num_traces: number of traces in the event log

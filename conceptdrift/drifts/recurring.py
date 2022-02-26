@@ -10,7 +10,7 @@ from conceptdrift.source.process_tree_controller import generate_specific_trees,
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 
-def recurring_drift(num_traces=1000, start_point=0.0, end_point=1.0, num_of_seasonal_changes=3, pro_first_version=0.5, model_one=None, model_two=None, change_proportion=0.4):
+def generate_log_with_recurring_drift(num_traces=1000, start_point=0.0, end_point=1.0, num_of_seasonal_changes=3, pro_first_version=0.5, model_one=None, model_two=None, change_proportion=0.4):
     """ Generation of an event log with a recurring drift
 
     :param num_traces: number of traces in the event log

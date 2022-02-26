@@ -8,7 +8,7 @@ from conceptdrift.source.event_log_controller import combine_two_logs, add_durat
 from conceptdrift.source.process_tree_controller import generate_specific_trees
 
 
-def incremental_drift(num_versions=4, traces=None, change_proportion=0.1, model=generate_specific_trees('middle')):
+def generate_log_with_incremental_drift(num_versions=4, traces=None, change_proportion=0.1, model=generate_specific_trees('middle')):
     """ Generation of an event log with an incremental drift
     
     :param num_versions: number of occurring process tree versions

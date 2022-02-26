@@ -8,10 +8,10 @@ import pathlib
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 from pm4py.objects.process_tree.exporter import exporter as ptml_exporter
 
-from conceptdrift.drifts.gradual import gradual_drift
+from conceptdrift.drifts.gradual import generate_log_with_gradual_drift
 from conceptdrift.drifts.incremental import incremental_drift_gs
-from conceptdrift.drifts.recurring import recurring_drift
-from conceptdrift.drifts.sudden import sudden_drift
+from conceptdrift.drifts.recurring import generate_log_with_recurring_drift
+from conceptdrift.drifts.sudden import generate_log_with_sudden_drift
 from conceptdrift.source.evolution import evolve_tree_randomly_gs
 from conceptdrift.source.event_log_controller import add_duration_to_log, get_timestamp_log
 from conceptdrift.source.noise import add_noise_gs
@@ -49,7 +49,7 @@ def generate_logs(num_logs=50, num_traces=1000, drifts=['sudden', 'gradual', 're
             if drift != 'incremental':
                 tree_two, deleted_acs, added_acs, moved_acs = evolve_tree_randomly_gs(drift_tree, ran_evolve)
             if drift == 'sudden':
-                event_log = sudden_drift(num_traces, drift_area_one, model, tree_two)
+                event_log = generate_log_with_sudden_drift(num_traces, drift_area_one, model, tree_two)
                 parameters += "; drift: sudden; change point: "+str(drift_area_one) + "; random evolution: "+str(ran_evolve)
                 dr_s = "N/A"
             elif drift == 'gradual':
@@ -60,7 +60,7 @@ def generate_logs(num_logs=50, num_traces=1000, drifts=['sudden', 'gradual', 're
                 else:
                     gr_type = 'exponential'
                     dr_s = 'exponential distribution'
-                event_log = gradual_drift(num_traces, drift_area_one, drift_area_two, gr_type, model, tree_two)
+                event_log = generate_log_with_gradual_drift(num_traces, drift_area_one, drift_area_two, gr_type, model, tree_two)
                 parameters += "; drift: gradual; start point: "+str(drift_area_one)+"; end point: "+str(drift_area_two)+"; distribution: "+gr_type + "; random evolution: "+str(ran_evolve)
             elif drift == 'recurring':
                 ran_odd = [3, 5]
@@ -72,7 +72,7 @@ def generate_logs(num_logs=50, num_traces=1000, drifts=['sudden', 'gradual', 're
                 else:
                     sea_cha = randint(1, 6)
                     dr_s = str(sea_cha)+" seasonal changes"
-                event_log = recurring_drift(num_traces, drift_area_one, drift_area_two, sea_cha, pro_first, model, tree_two)
+                event_log = generate_log_with_recurring_drift(num_traces, drift_area_one, drift_area_two, sea_cha, pro_first, model, tree_two)
                 parameters += "; drift: recurring; start point: "+str(drift_area_one)+"; end point: "+str(drift_area_two)+"; seasonal changes: "+str(sea_cha)+"; proportion initial version: "+str(pro_first) + "; random evolution: "+str(ran_evolve)
             elif drift == 'incremental':
                 num_models = randint(2, 5)
