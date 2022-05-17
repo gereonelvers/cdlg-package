@@ -5,7 +5,7 @@ Python package for creating concept drifts in event logs, introducing noise into
 About
 ---
 This package contains all essential functions of our approach as described in:
- CDLG: A Tool for the Generation of Event Logs with Concept Drifts by Justus Grimm, Alexander Kraus, and Han van der Aa, submitted to the demo track of BPM 2022. The primary contact for questions or comments regarding CDLG is Alexander Kraus: alexander[dot]kraus[at]uni-mannheim[dot]de
+ _CDLG: A Tool for the Generation of Event Logs with Concept Drifts_ by Justus Grimm, Alexander Kraus, and Han van der Aa, submitted to the demo track of BPM 2022. The primary contact for questions or comments regarding CDLG is Alexander Kraus: alexander[dot]kraus[at]uni-mannheim[dot]de
 
 **This is the package to use the functions for your own project. The actual tool for generating usable event logs with concept drifts can be found [here](https://gitlab.uni-mannheim.de/processanalytics/cdlg_tool).**
 
