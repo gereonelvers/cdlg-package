@@ -1,3 +1,9 @@
+This repository contains a slightly modified version of the [CDLG package](https://gitlab.uni-mannheim.de/processanalytics/cdlg-package) by Justus Grimm, Alexander Kraus, and Han van der Aa.
+The only change made is adapting the setup.py file to use different versions of its dependencies to prevent compatibility issues with other packages.
+To be clear, I do not make any claim of ownership - this is just a convenience hack.
+
+Below, find the original readme:
+
 CDLG: Concept Drift Log Generator
 ====
 Python package for creating concept drifts in event logs, introducing noise into an event log and randomly evolving a process tree to a new version.
@@ -13,7 +19,7 @@ Installation
 ---
 **The package requires python >= 3.9**
 
-1. Install via pip: <code>pip install git+https://gitlab.uni-mannheim.de/processanalytics/cdlg-package </code>
+1. Install via pip: <code>pip install git+https://github.com/gereonelvers/cdlg-package </code>
 
 
 Usage

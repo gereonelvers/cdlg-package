@@ -5,8 +5,8 @@ setup(
     version='0.0.2',
     packages=['conceptdrift', 'conceptdrift.drifts', 'conceptdrift.source'],
     install_requires=[
-        'pm4py==2.2.13.1',
-        'graphviz==0.17'
+        'pm4py>=2.2.13.1',
+        'graphviz>=0.17'
     ],
     url='',
     license='GPL 3.0',
